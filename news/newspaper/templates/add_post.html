@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+
+
+{% block title %}Написать новый пост{% endblock %}
+{% block content %}
+
+{% if user.is_authenticated %}
+
+        <h1>Добавить пост</h1>
+
+              <form method="POST">
+                 {% csrf_token %}
+                 {{ form.as_p}}
+                 <button class="btn btn-success">Пост</button>
+              </form>
+
+
+{% else %}
+
+У тебя нет на это прав!
+
+{% endif%}
+{% endblock %}

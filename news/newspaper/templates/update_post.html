@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Редактировать пост{% endblock %}
+{% block content %}
+
+{% if user.is_authenticated %}
+<h1>Редактировать пост</h1>
+
+<form method="POST">
+         {% csrf_token %}
+         {{ form.as_p}}
+         <button class="btn btn-success">Обновить</button>
+
+         <button class="btn btn-success">Удаилть</button>
+</form>>
+
+
+
+{% else %}
+
+У тебя нет на это прав!
+
+{% endif%}
+
+{% endblock %}

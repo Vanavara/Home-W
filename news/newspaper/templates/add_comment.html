@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Написать новый коммент{% endblock %}
+{% block content %}
+
+
+
+        <h1>Добавить коммент</h1>
+
+              <form method="POST">
+                 {% csrf_token %}
+                 {{ form.as_p}}
+                 <button class="btn btn-success">Добавить</button>
+              </form>
+
+
+
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}{{ post.title_tag }}{% endblock %}
+
+
+
+
+{% block content %}
+
+            <h1>{{post.title}}</h1>
+            <small>By:
+                {{ post.author.first_name }}
+                {{post.author.last_name }} -
+                {{ post.post_date }} -
+                {{ post.category }}
+                    {% if user.is_authenticated %}
+                        {% if user.id == post.author.id %}
+                            <a href="{% url 'update_post' post.pk %}">(Изменить)</a>
+
+                            <a href="{% url 'delete_post' post.pk %}">(Удалить)
+                        {% endif %}
+                    {% endif%}
+            </small><br/>
+            <hr>
+            </br>
+{{ post.body }}
+
+<br/><br/>
+<a href="{% url 'home' %}" class="btn btn-success">Back</a>
+
+<br/><br/>
+<hr>
+<br/>
+<form action="{%url 'like_post' post.pk %}" method="POST">
+    {% csrf_token %}
+    <button type="submit", name="post_id", value = "{{ post.id }}",
+    class="btn btn-primary btn-sm">Like</button> - {{ total_likes }} Likes
+</form>
+<br/>
+<form action="{%url 'dislike_post' post.pk %}" method="POST">
+    {% csrf_token %}
+    <button type="submit", name="post_id", value = "{{ post.id }}",
+    class="btn btn-primary btn-sm">Dislike</button> - {{ total_dislikes }} Dislikes
+</form>
+<br/><br/>
+
+<h5>Комментарии</h5>
+
+{% if not post.comments.all %}
+          Ещё никто не оставил свой коммент
+        <a href="{% url 'add_comment' post.pk %}">Добавить</a>
+{% else %}
+
+        {% for comment in post.comments.all %}
+                <strong>
+                    {{ comment.name }} -
+                    {{ comment.date_added }}
+                </strong>
+                <br/>
+                    {{ comment.body }}
+        {% endfor %}
+<br/>
+    <a href="{% url 'add_comment' post.pk %}">Добавить коммент</a>
+{% endif %}
+<br/><br/>
+{% endblock %}

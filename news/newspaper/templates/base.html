@@ -1,0 +1,148 @@
+{% load i18n %}
+{% load tz %}
+
+
+<html lang="en">
+  <head>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+
+    <title>
+      {% block title %}
+      Буэнос диас
+      {% endblock %}
+    </title>
+    <style>
+        body {background-color: {% if current_time.hour >= 19 or current_time.hour <= 7 %} darkcyan {% else %} powderblue {% endif %};}
+    </style>
+  </head>
+  <body>
+    <form action="{% url 'set_language' %}" method="POST"> {% csrf_token %}
+        <input type="hidden" name="next" value="{{ redirect_to }}">
+
+        <select name="language" id="">
+            {% get_available_languages as LANGUAGES %}
+            {% get_language_info_list for LANGUAGES as languages %}
+
+            {% for language in languages %}
+                <option value="{{ language.code }}" {% if language.code == LANGUAGE_CODE %} selected {% endif %}>
+                    {{ language.name_local }} - {{ language.code }}
+                </option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="set">
+    </form>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="{% url 'home' %}">
+      {% trans "Суперклассный Блог" %}
+
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse"
+          data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+          aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+
+      {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" href = "{% url 'add_post' %}">{% trans "Добавить пост" %}</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href = "{% url 'add_category.html' %}">{% trans "Добавить категорию" %}</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href = "{% url 'logout' %}">Logout</a>
+          </li>
+      {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href = "{% url 'register' %}">{% trans "Зарегаться" %}</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href = "{% url 'login' %}">Login</a>
+          </li>
+      {% endif %}
+
+
+
+
+
+    </ul>
+<!--    <form class="form-inline my-2 my-lg-0">-->
+<!--      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">-->
+<!--      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>-->
+<!--    </form>-->
+  </div>
+</nav>
+
+    <br/>
+    <div class='container'>
+
+ {% if page_obj.has_previous %}
+       <a href="?page=1">1</a>
+       {% if page_obj.previous_page_number != 1 %}
+           ...
+           <a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
+       {% endif %}
+   {% endif %}
+
+   {# Информация о текущей странице #}
+   {{ page_obj.number }}
+
+   {# Информация о следующих страницах #}
+   {% if page_obj.has_next %}
+       <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
+       {% if paginator.num_pages != page_obj.next_page_number %}
+           ...
+       <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
+       {% endif %}
+   {% endif %}
+
+        {% block content %}
+
+        {% endblock %}
+    </div>
+    <!-- Optional JavaScript; choose one of the two! -->
+
+    <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+
+    <!-- Option 2: Separate Popper and Bootstrap JS -->
+    <!--
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
+    -->
+
+    {% get_current_timezone as TIME_ZONE %}
+    <form action="" method="POST">
+        {% csrf_token %}
+        <label for="timezone">Time zone:</label>
+        <select name="timezone">
+            {% for tz in timezones %}
+            <option value="{{ tz }}"{% if tz == TIME_ZONE %} selected{% endif %}>{{ tz }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Set">
+    </form>
+
+    {{ TIME_ZONE }}
+    {{ current_time|timezone:TIME_ZONE }}
+
+    {% for model in models %}
+    <div class="model-class">
+        {{ model.name }}
+    </div>
+    {% endfor %}
+  </body>
+</html>
